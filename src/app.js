@@ -52,4 +52,15 @@ app.put("/books/:id", express.json(), (req, res) => {
   }
 });
 
+app.delete("/books/:id", (req, res) => {
+  const bookId = parseInt(req.params.id, 10);
+  const bookIndex = books.findIndex((book) => book.id === Number(bookId));
+  if (bookIndex !== -1) {
+    books.splice(bookIndex, 1);
+    res.status(200).send("Book deleted successfully.");
+  } else {
+    res.status(404).send("Book not found.");
+  }
+});
+
 export default app;
