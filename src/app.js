@@ -1,19 +1,25 @@
 import express from "express";
+import connectDB from "./config/dbConnect.js";
+import routes from "./routes/index.js";
 
-const app = express();
+const dbConnection = await connectDB();
 
-const books = [
-  { id: 1, title: "1984", author: "George Orwell" },
-  { id: 2, title: "To Kill a Mockingbird", author: "Harper Lee" },
-  { id: 3, title: "The Great Gatsby", author: "F. Scott Fitzgerald" },
-];
+dbConnection.on(
+  "error",
+  console.log.bind(console, "MongoDB connection error:")
+);
 
-app.get("/", (req, res) => {
-  res.status(200).send("Hello World!");
+dbConnection.once("open", () => {
+  console.log("MongoDB connected!");
 });
 
-app.get("/books", (req, res) => {
-  res.status(200).json(books);
+const app = express();
+routes(app);
+
+app.get("/books", async (req, res) => {
+  const allBooks = await Book.find({});
+
+  res.status(200).json(allBooks);
 });
 
 app.get("/books/:id", (req, res) => {
