@@ -1,7 +1,7 @@
 import Book from "../models/books.js";
 
 class BookController {
-  static async getAllBooks(_, res) {
+  static async getAllBooks(req, res) {
     try {
       const books = await Book.find({});
       res.status(200).json(books);
@@ -23,4 +23,4 @@ class BookController {
   }
 }
 
-export default new BookController();
+export default BookController;
