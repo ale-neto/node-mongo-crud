@@ -1,11 +1,10 @@
-import e from "express";
 import mongoose from "mongoose";
-
+import { authorSchema } from "./authors";
 const bookSchema = new mongoose.Schema(
   {
     id: { type: mongoose.Schema.Types.ObjectId },
     title: { type: String, required: true },
-    author: { type: String, required: true },
+    author: authorSchema,
     genre: { type: String },
     year: { type: Number },
     pages: { type: Number },

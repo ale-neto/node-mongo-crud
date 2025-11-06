@@ -62,7 +62,7 @@ class BookController {
       });
     } catch (error) {
       res.status(500).json({
-        message: "Erro ao buscar livros",
+        message: "Error in search book",
         error: error.message,
       });
     }
