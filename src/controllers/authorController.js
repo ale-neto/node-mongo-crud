@@ -1,7 +1,7 @@
 import { author as Author } from "../models/authors.js";
 
 class AuthorController {
-  static async getAllAuthors(req, res) {
+  static async getAllAuthors(req, res, next) {
     try {
       const { page = 1, limit = 10 } = req.query;
 
@@ -20,13 +20,11 @@ class AuthorController {
         authors,
       });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error retrieving authors", error: error.message });
+      next(error);
     }
   }
 
-  static async getByIdAuthor(req, res) {
+  static async getByIdAuthor(req, res, next) {
     try {
       const { id } = req.params;
       const author = await Author.findById(id);
@@ -37,13 +35,11 @@ class AuthorController {
 
       res.status(200).json(author);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error retrieving author", error: error.message });
+      next(error);
     }
   }
 
-  static async searchAuthor(req, res) {
+  static async searchAuthor(req, res, next) {
     try {
       const { title, author, page = 1, limit = 10 } = req.query;
       const query = {};
@@ -63,14 +59,11 @@ class AuthorController {
         results: authors,
       });
     } catch (error) {
-      res.status(500).json({
-        message: "Error in search author",
-        error: error.message,
-      });
+      next(error);
     }
   }
 
-  static async createAuthor(req, res) {
+  static async createAuthor(req, res, next) {
     try {
       const newAuthor = new Author(req.body);
       const savedAuthor = await newAuthor.save();
@@ -78,13 +71,11 @@ class AuthorController {
         .status(201)
         .json({ message: "Author created successfully", author: savedAuthor });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error creating author", error: error.message });
+      next(error);
     }
   }
 
-  static async putAuthor(req, res) {
+  static async putAuthor(req, res, next) {
     try {
       const { id } = req.params;
       const updatedAuthor = await Author.findByIdAndUpdate(id, req.body, {
@@ -100,13 +91,11 @@ class AuthorController {
         author: updatedAuthor,
       });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error updating author", error: error.message });
+      next(error);
     }
   }
 
-  static async deleteAuthor(req, res) {
+  static async deleteAuthor(req, res, next) {
     try {
       const { id } = req.params;
       const deletedAuthor = await Author.findByIdAndDelete(id);
@@ -117,9 +106,7 @@ class AuthorController {
 
       res.status(200).json({ message: "Author deleted successfully" });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error deleting author", error: error.message });
+      next(error);
     }
   }
 }

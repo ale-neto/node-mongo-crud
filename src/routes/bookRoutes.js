@@ -43,7 +43,7 @@ routes.get("/books", BookController.getAllBooks);
  * @swagger
  * /books/search:
  *   get:
- *     summary: Busca livros por título ou autor
+ *     summary: Busca livros por título ou nome do autor
  *     tags: [Books]
  *     parameters:
  *       - in: query
@@ -52,10 +52,10 @@ routes.get("/books", BookController.getAllBooks);
  *           type: string
  *         description: "Termo de busca no título"
  *       - in: query
- *         name: author
+ *         name: authorName
  *         schema:
  *           type: string
- *         description: "Termo de busca no autor"
+ *         description: "Termo de busca no nome do autor"
  *       - in: query
  *         name: page
  *         schema:
@@ -114,12 +114,18 @@ routes.get("/books/:id", BookController.getByIdBook);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Book'
+ *             $ref: '#/components/schemas/BookInput'
  *     responses:
  *       201:
  *         description: Livro criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
  *       400:
  *         description: Dados inválidos
+ *       404:
+ *         description: Autor não encontrado
  */
 routes.post("/books", BookController.createBook);
 
@@ -141,12 +147,16 @@ routes.post("/books", BookController.createBook);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Book'
+ *             $ref: '#/components/schemas/BookInput'
  *     responses:
  *       200:
  *         description: Livro atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
  *       404:
- *         description: Livro não encontrado
+ *         description: Livro ou autor não encontrado
  */
 routes.put("/books/:id", BookController.putBook);
 
@@ -175,11 +185,33 @@ routes.delete("/books/:id", BookController.deleteBook);
  * @swagger
  * components:
  *   schemas:
- *     Book:
+ *     BookInput:
  *       type: object
  *       required:
  *         - title
- *         - author
+ *         - authorId
+ *       properties:
+ *         title:
+ *           type: string
+ *           example: Clean Code
+ *         authorId:
+ *           type: string
+ *           example: 673abc123def456789012345
+ *           description: ID do autor existente
+ *         genre:
+ *           type: string
+ *           example: Technology
+ *         year:
+ *           type: integer
+ *           example: 2008
+ *         pages:
+ *           type: integer
+ *           example: 464
+ *         price:
+ *           type: number
+ *           example: 49.99
+ *     Book:
+ *       type: object
  *       properties:
  *         _id:
  *           type: string
@@ -188,14 +220,26 @@ routes.delete("/books/:id", BookController.deleteBook);
  *           type: string
  *           example: Clean Code
  *         author:
+ *           type: object
+ *           properties:
+ *             name:
+ *               type: string
+ *               example: Robert C. Martin
+ *             nationality:
+ *               type: string
+ *               example: American
+ *         genre:
  *           type: string
- *           example: Robert C. Martin
+ *           example: Technology
  *         year:
  *           type: integer
  *           example: 2008
- *         publisher:
- *           type: string
- *           example: Prentice Hall
+ *         pages:
+ *           type: integer
+ *           example: 464
+ *         price:
+ *           type: number
+ *           example: 49.99
  */
 
 export default routes;

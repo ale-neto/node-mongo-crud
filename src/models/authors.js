@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const authorSchema = new mongoose.Schema(
   {
     id: { type: mongoose.Schema.Types.ObjectId },
-    name: { type: String, required },
+    name: { type: String, required: true },
     nationality: { type: String },
   },
   { versionKey: false }
 );
 
-const author = mongoose.model("author", authorSchema);
+const author = mongoose.model("Author", authorSchema);
 
 export { author, authorSchema };

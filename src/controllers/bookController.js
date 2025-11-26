@@ -1,3 +1,4 @@
+import { author } from "../models/authors.js";
 import Book from "../models/books.js";
 
 class BookController {
@@ -43,11 +44,11 @@ class BookController {
 
   static async searchBook(req, res) {
     try {
-      const { title, author, page = 1, limit = 10 } = req.query;
+      const { title, authorName, page = 1, limit = 10 } = req.query;
       const query = {};
 
       if (title) query.title = new RegExp(title, "i");
-      if (author) query.author = new RegExp(author, "i");
+      if (authorName) query["author.name"] = new RegExp(authorName, "i");
 
       const skip = (page - 1) * limit;
 
@@ -70,8 +71,24 @@ class BookController {
 
   static async createBook(req, res) {
     try {
-      const newBook = new Book(req.body);
+      const bookBody = req.body;
+
+      const authorData = await author.findById(bookBody.authorId);
+
+      if (!authorData) {
+        return res.status(404).json({ message: "Author not found" });
+      }
+
+      const newBook = new Book({
+        ...bookBody,
+        author: {
+          name: authorData.name,
+          nationality: authorData.nationality,
+        },
+      });
+
       const savedBook = await newBook.save();
+
       res
         .status(201)
         .json({ message: "Book created successfully", book: savedBook });
@@ -85,7 +102,24 @@ class BookController {
   static async putBook(req, res) {
     try {
       const { id } = req.params;
-      const updatedBook = await Book.findByIdAndUpdate(id, req.body, {
+      const { title, authorId, genre, year, pages, price } = req.body;
+
+      let updateData = { title, genre, year, pages, price };
+
+      if (authorId) {
+        const authorData = await author.findById(authorId);
+
+        if (!authorData) {
+          return res.status(404).json({ message: "Author not found" });
+        }
+
+        updateData.author = {
+          name: authorData.name,
+          nationality: authorData.nationality,
+        };
+      }
+
+      const updatedBook = await Book.findByIdAndUpdate(id, updateData, {
         new: true,
       });
 
