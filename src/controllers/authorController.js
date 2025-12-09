@@ -1,3 +1,4 @@
+import NotFound from "../errors/NotFound.js";
 import { author as Author } from "../models/authors.js";
 
 class AuthorController {
@@ -83,7 +84,7 @@ class AuthorController {
       });
 
       if (!updatedAuthor) {
-        return res.status(404).json({ message: "Author not found" });
+        next(new NotFound("Author not found"));
       }
 
       res.status(200).json({
@@ -101,7 +102,7 @@ class AuthorController {
       const deletedAuthor = await Author.findByIdAndDelete(id);
 
       if (!deletedAuthor) {
-        return res.status(404).json({ message: "Author not found" });
+        next(new NotFound("Author not found"));
       }
 
       res.status(200).json({ message: "Author deleted successfully" });
