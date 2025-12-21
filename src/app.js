@@ -20,9 +20,9 @@ app.use(express.json());
 
 routes(app);
 
-app.use(manipulation404);
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use(manipulation404);
 
 app.use(manipulationOfError);
 

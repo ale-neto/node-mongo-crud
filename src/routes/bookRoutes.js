@@ -1,5 +1,7 @@
 import express from "express";
 import BookController from "../controllers/bookController.js";
+import pagination from "../middleware/pagination.js";
+import sorting from "../middleware/sorting.js";
 
 const routes = express.Router();
 
@@ -37,7 +39,7 @@ const routes = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Book'
  */
-routes.get("/books", BookController.getAllBooks);
+routes.get("/books", pagination, sorting    , BookController.getAllBooks);
 
 /**
  * @swagger
@@ -76,7 +78,7 @@ routes.get("/books", BookController.getAllBooks);
  *       404:
  *         description: "Nenhum livro encontrado"
  */
-routes.get("/books/search", BookController.searchBook);
+routes.get("/books/search",pagination, BookController.searchBook);
 
 /**
  * @swagger

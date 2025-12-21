@@ -1,5 +1,7 @@
 import express from "express";
 import AuthorController from "../controllers/authorController.js";
+import pagination from "../middleware/pagination.js";
+import sorting from "../middleware/sorting.js";
 
 const routes = express.Router();
 
@@ -37,7 +39,7 @@ const routes = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Author'
  */
-routes.get("/authors", AuthorController.getAllAuthors);
+routes.get("/authors", pagination, sorting, AuthorController.getAllAuthors);
 
 /**
  * @swagger
@@ -76,7 +78,12 @@ routes.get("/authors", AuthorController.getAllAuthors);
  *       404:
  *         description: "Nenhum autor encontrado"
  */
-routes.get("/authors/search", AuthorController.searchAuthor);
+routes.get(
+  "/authors/search",
+  pagination,
+  sorting,
+  AuthorController.searchAuthor
+);
 
 /**
  * @swagger

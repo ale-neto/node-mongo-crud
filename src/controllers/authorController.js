@@ -1,29 +1,31 @@
 import NotFound from "../errors/NotFound.js";
-import { author as Author } from "../models/authors.js";
+import { author as Author } from "../models/index.js";
 
 class AuthorController {
-  static async getAllAuthors(req, res, next) {
-    try {
-      const { page = 1, limit = 10 } = req.query;
+static async getAllAuthors(req, res, next) {
+  try {
+    const { page, limit, skip } = req.pagination;
+    const sortOptions = req.sorting;
 
-      const skip = (page - 1) * limit;
+    const authors = await Author.find({})
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
 
-      const authors = await Author.find({})
-        .skip(Number(skip))
-        .limit(Number(limit));
+    const total = await Author.countDocuments();
 
-      const total = await Author.countDocuments();
-
-      res.status(200).json({
-        page: Number(page),
-        totalPages: Math.ceil(total / limit),
-        totalAuthors: total,
-        authors,
-      });
-    } catch (error) {
-      next(error);
-    }
+    res.status(200).json({
+      page,
+      totalPages: Math.ceil(total / limit),
+      totalAuthors: total,
+      authors,
+    });
+  } catch (error) {
+    next(error);
   }
+}
+
+
 
   static async getByIdAuthor(req, res, next) {
     try {
@@ -40,29 +42,35 @@ class AuthorController {
     }
   }
 
-  static async searchAuthor(req, res, next) {
-    try {
-      const { title, author, page = 1, limit = 10 } = req.query;
-      const query = {};
+static async searchAuthor(req, res, next) {
+  try {
+    const { title, author } = req.query;
+    const { page, limit, skip } = req.pagination;
+    const sortOptions = req.sorting;
 
-      if (title) query.title = new RegExp(title, "i");
-      if (author) query.author = new RegExp(author, "i");
+    const query = {};
 
-      const skip = (page - 1) * limit;
+    if (title) query.title = new RegExp(title, "i");
+    if (author) query.author = new RegExp(author, "i");
 
-      const authors = await Author.find(query).skip(skip).limit(Number(limit));
-      const total = await Author.countDocuments(query);
+    const authors = await Author.find(query)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
 
-      res.status(200).json({
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        results: authors,
-      });
-    } catch (error) {
-      next(error);
-    }
+    const total = await Author.countDocuments(query);
+
+    res.status(200).json({
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      results: authors,
+    });
+  } catch (error) {
+    next(error);
   }
+}
+
 
   static async createAuthor(req, res, next) {
     try {
